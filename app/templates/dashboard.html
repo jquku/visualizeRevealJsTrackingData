@@ -1,0 +1,40 @@
+{% block title %}Dashboard{% endblock %}
+
+{% block pagetitle %}Dashboard{% endblock %}
+
+{% block styling %}
+    <link rel="stylesheet" href="/static/plugins/chart.js/Chart.css" />
+    <style type="text/css">
+        .content {width: auto; margin: 0px 25px 0px 25px;}
+        div > p {font-size: 1.2rem;}
+        .content > div {padding: 15px;}
+        .content > div p {padding: 0px; margin: 0 0 2px 0;}
+        .keyfigure {font-size: 0.92rem; padding-left: 25% !important; }
+        .figures {margin: 8px 0 0 0;}
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="max-width: 100%;">
+    <div class="row">
+        <div class="col-xl">
+            <h3>Tracking data</h3>
+        </div>
+        <div class="col-xl">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-4">
+            <p class="text-center">Total amount of tracked sessions: {{ data.numberOfTrackedSessions }}</p>
+            <canvas id="totalTrackedSessions" width="400" height="10"></canvas>
+            <p class="text-center">Total amount of students who checked out the presentation: {{ data.numberOfStudents }}</p>
+            <canvas id="totalStudents" width="400" height="10"></canvas>
+            <p class="text-center">Average dwell time: {{ data.averageDwellTime }}</p>
+            <canvas id="totalDwellTime" width="400" height="10"></canvas>
+            <p class="text-center">Average presentation progress: {{ data.averageProgress }} %</p>
+            <canvas id="totalPresentationProgress" width="400" height="10"></canvas>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
