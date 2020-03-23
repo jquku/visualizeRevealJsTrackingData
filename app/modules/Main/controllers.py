@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect
+from flask import Blueprint, render_template
 
 import requests
 import datetime
@@ -8,8 +8,12 @@ mod_main = Blueprint('Main',__name__)
 
 @mod_main.route('/', methods=['GET', 'POST'])
 
-#AUDIO AND VIDEO MISSING
+#no data anonymization yet
+#VIDEO MISSING
+#for testing the reveal.js tracking container need to be running and you should
+#use the exemplary presentation for tracking data
 #currently quiz and dwellTimesObject get userToken and studentId appended
+
 
 def main():
     #send get request to get json object with tracking data
@@ -193,7 +197,4 @@ def main():
     #print("QUIZ: " + str(quizSessionList))
     #print("AUDIO: " + str(audioSessionList))
 
-
-    #later a template is being returned that visualizes the kpis (AdminLTE, chartJS --> dashboard)
     return render_template("dashboard.html", data=data)
-    #return "Hi"
