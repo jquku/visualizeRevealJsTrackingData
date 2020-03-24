@@ -1,40 +1,109 @@
-{% extends 'layout.html' %}
-{% block title %}Dashboard{% endblock %}
+<!DOCTYPE html>
+<html>
 
-{% block pagetitle %}Dashboard{% endblock %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dashboard</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="/width=device-width, initial-scale=1">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/static/dist/css/adminlte.min.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
 
-{% block styling %}
-    <style type="text/css">
-        .content {width: auto; margin: 0px 25px 0px 25px;}
-        div > p {font-size: 1.2rem;}
-        .content > div {padding: 15px;}
-        .content > div p {padding: 0px; margin: 0 0 2px 0;}
-        .keyfigure {font-size: 0.92rem; padding-left: 25% !important; }
-        .figures {margin: 8px 0 0 0;}
-    </style>
-{% endblock %}
-
-{% block content %}
-<div class="container-fluid" style="max-width: 100%;">
-    <div class="row">
-        <div class="col-xl">
-            <h3>Tracking data</h3>
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark" style="font-size:40px;font-weight:bold;">Dashboard</h1>
+            </div>
+            <!-- /.col -->
         </div>
-        <div class="col-xl">
-        </div>
+        <!-- /.row -->
     </div>
-    <div class="row">
-        <div class="col-xl-4">
-            <p class="text-center">Total amount of tracked sessions: {{ data.numberOfTrackedSessions }}</p>
-            <canvas id="totalTrackedSessions" width="400" height="10"></canvas>
-            <p class="text-center">Total amount of students who checked out the presentation: {{ data.numberOfStudents }}</p>
-            <canvas id="totalStudents" width="400" height="10"></canvas>
-            <p class="text-center">Average dwell time: {{ data.averageDwellTime }}</p>
-            <canvas id="totalDwellTime" width="400" height="10"></canvas>
-            <p class="text-center">Average presentation progress: {{ data.averageProgress }} %</p>
-            <canvas id="totalPresentationProgress" width="400" height="10"></canvas>
-        </div>
-    </div>
+    <!-- /.container-fluid -->
 </div>
+<!-- /.content-header -->
 
-{% endblock %}
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ data.numberOfStudents }}</h3>
+
+                        <p>Visitors</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-bag"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{ data.numberOfTrackedSessions }}</h3>
+
+                        <p>Sessions</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{data.averageDwellTime}}</h3>
+
+                        <p>Average dwell time</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-person-add"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{data.averageProgress}}<sup style="font-size: 20px">%</sup></h3>
+
+                        <p>Average presentation progress</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-pie-graph"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- ChartJS -->
+<script src="/plugins/chart.js/Chart.min.js"></script>
+</body>
+
+</html>
