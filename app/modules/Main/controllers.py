@@ -5,8 +5,7 @@ import datetime
 
 mod_main = Blueprint('Main',__name__)
 
-
-@mod_main.route('/', methods=['GET', 'POST'])
+@mod_main.route('/dashboard', methods=['GET', 'POST'])
 
 #no data anonymization yet
 #VIDEO MISSING
