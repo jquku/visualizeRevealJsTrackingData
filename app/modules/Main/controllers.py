@@ -29,7 +29,6 @@ def main():
     audioSessionList = []
     #videoSessionList = []
     numberOfTimesFirstQuizPageWasReached = 0
-    quizExisting = False
 
     for i in range(0, numberOfTrackedSessions):
 
@@ -52,11 +51,11 @@ def main():
 
             #VORHER außerhalb der for schleife
             sessionQuizObject = []
+            temporaryQuizObject = []
             sessionAudioObject = []
             #sessionVideoObject = []
 
             if timelineData[j].get('type') == "audio":
-                quizExisting = True
                 if timeline[j].get('mediaEvent') == "play":
                     audioStart = timeline[j].get('timestamp')
                     audioID = timeline[j].get('metadata').get('id')
@@ -76,9 +75,9 @@ def main():
                     quizScore = timelineData[j].get('score')
                     quizDwellTime = timelineData[j].get('dwellTime')
                 else:
-                    quizScore = 0
-                    quizDwellTime = None
-
+                    #-1 for not completed
+                    quizScore = -1
+                    quizDwellTime = -1
                 #print("quizDwellTime: " + str(quizDwellTime))
                 #print("quizScore: " + str(quizScore))
 
@@ -93,16 +92,20 @@ def main():
                 quizNumberOfQuestions = timelineData[j].get('metadata').get('numberOfQuestions')
                 timestampOfQuizSession =  timelineData[j].get('timestamp')
 
-                sessionQuizObject.append(quizScore)
-                sessionQuizObject.append(quizDwellTime)
-                sessionQuizObject.append(quizId)
-                sessionQuizObject.append(quizName)
-                sessionQuizObject.append(quizTopic)
-                sessionQuizObject.append(quizNumberOfQuestions)
-                sessionQuizObject.append(timestampOfQuizSession)
+                #temporaryQuizObject = [quizDwellTime, quizScore, quizId,
+                #    quizName, quizTopic, quizNumberOfQuestions,
+                #    timestampOfQuizSession, currentStudentID, userToken]
+                temporaryQuizObject.append(quizDwellTime)
+                temporaryQuizObject.append(quizScore)
+                temporaryQuizObject.append(quizId)
+                temporaryQuizObject.append(quizName)
+                temporaryQuizObject.append(quizTopic)
+                temporaryQuizObject.append(quizNumberOfQuestions)
+                temporaryQuizObject.append(timestampOfQuizSession)
 
-                sessionQuizObject.append(currentStudentID)
-                sessionQuizObject.append(userToken)
+                temporaryQuizObject.append(currentStudentID)
+                temporaryQuizObject.append(userToken)
+                sessionQuizObject.append(temporaryQuizObject)
                 #QUIZ LOGGING
                 #print("quizId: " + str(quizId))
                 #print("quizName: " + str(quizName))
@@ -110,10 +113,16 @@ def main():
                 #print("quizNumberOfQuestions: " + str(quizNumberOfQuestions))
                 #print("timestampOfQuizSession: " + str(timestampOfQuizSession))
 
-                #VORHER eins nach links eingerueckt
                 #building the final quiz list with all quiz session elements
+                indexForQuiz = None
+                for u in range (0, len(quizSessionList)):
+                    if quizSessionList[u][0][2] == quizId:
+                        indexForQuiz = u
                 if len(sessionQuizObject) > 0:
-                    quizSessionList.append(sessionQuizObject)
+                    if indexForQuiz == None:
+                        quizSessionList.append(sessionQuizObject)
+                    else:
+                        quizSessionList[u].append(sessionQuizObject)    
                 audioSessionList.append(sessionAudioObject)
                 #videoSessionList.append(sessionVideoObject)
 
@@ -129,7 +138,7 @@ def main():
 
         #progress is between 0 and 1 (collected when the user closed the presentation)
         finalProgress = response[i].get('tracking_json').get('finalProgress')
-
+        print("finalProgress: " + str(finalProgress))
         #LOGGING
         #print("number of slides: " + str(numberOfSlides))
         #print("URL: " + str(presentationUrl))
@@ -160,26 +169,16 @@ def main():
     averageSlidesPerSession = sumSlidesLookedAt/numberOfTrackedSessions
     averageSlidesPerStudent = sumSlidesLookedAt/numberOfStudents
 
-    numberOfQuizBeingDone = len(quizSessionList)
-
-    #getting the number of quiz participants
-    listWithStudentsParticipatedInQuiz = []
-    for l in range(0, numberOfQuizBeingDone):
-        studentId = quizSessionList[l][7]
-        if studentId not in listWithStudentsParticipatedInQuiz:
-            listWithStudentsParticipatedInQuiz.append(studentId)
-    numberOfStudentsParticipatedInQuiz = len(listWithStudentsParticipatedInQuiz)
+    quizSessionList = getNumberOfStudentsWhoCompletedQuiz(quizSessionList)
 
     #return JSON object with all the tracking data
     data = {}
     data['numberOfStudents'] = numberOfStudents
     data['numberOfTrackedSessions'] = numberOfTrackedSessions
-    data['averageDwellTime'] = datetime.timedelta(seconds=(round(averageDwellTime)))
+    data['averageDwellTime'] = averageDwellTime
     data['averageProgress'] = round(averageProgress * 100)
     data['averageSlidesPerSession'] = averageSlidesPerSession
     data['averageSlidesPerStudent'] = averageSlidesPerStudent
-    data['quizExisting'] = quizExisting
-    data['numberOfStudentsParticipatedInQuiz'] = numberOfStudentsParticipatedInQuiz
     data['quizData'] = quizSessionList
     data['audioData'] = audioSessionList
 
@@ -197,3 +196,26 @@ def main():
     #print("AUDIO: " + str(audioSessionList))
 
     return render_template("dashboard.html", data=data)
+
+def getNumberOfStudentsWhoCompletedQuiz(data):
+    #print(len(data))
+    for i in range(0, len(data)):
+        currentlyCompleted = 0
+        numberOfElements = len(data[i])
+       
+        for j in range(0, numberOfElements):
+            if j==0:
+                currentScore = data[i][j][1]
+            else:
+                currentScore = data[i][j][0][1]
+            if not currentScore == -1:
+                currentlyCompleted = currentlyCompleted + 1
+        numberOfParticipants = len(data[i])
+        data[i][0].append(numberOfParticipants)
+        data[i][0].append(currentlyCompleted)
+        percentage = currentlyCompleted/numberOfParticipants
+        percentage = percentage * 100
+        percentage = round(percentage, 2)
+        percentage = "(" + str(percentage) + "%)"
+        data[i][0].append(percentage)
+    return data

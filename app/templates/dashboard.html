@@ -6,9 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Dashboard</title>
     <!-- Tell the browser to be responsive to screen width -->
-    <meta name="viewport" content="/width=device-width, initial-scale=1">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Theme style -->
     <link rel="stylesheet" href="/static/dist/css/adminlte.min.css">
     <!-- Google Font: Source Sans Pro -->
@@ -16,40 +14,40 @@
 </head>
 
 <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light" style="margin-left: 0px;">
+<nav class="main-header navbar navbar-expand navbar-white navbar-light" style="margin-left: 0px;">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
-      <li class="nav-item d-none d-sm-inline-block">
-        <a class="nav-link" style="padding-left: 0.1rem;"> Dashboard </a>
-        <!-- <h1 class="m-0 text-dark" style="font-size:30px;">Dashboard</h1> -->
-      </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a class="nav-link" style="padding-left: 0.1rem;"> Dashboard </a>
+            <!-- <h1 class="m-0 text-dark" style="font-size:30px;">Dashboard</h1> -->
+        </li>
     </ul>
 
     <!-- SEARCH FORM -->
     <form class="form-inline ml-3">
-      <div class="input-group input-group-sm">
-        <input class="form-control form-control-navbar" type="search" placeholder="Select lecture" aria-label="Search">
-        <div class="input-group-append">
-          <button class="btn btn-navbar" type="submit">
-            <i class="fas fa-search"></i>
-          </button>
+        <div class="input-group input-group-sm">
+            <input class="form-control form-control-navbar" type="search" placeholder="Select lecture" aria-label="Search">
+            <div class="input-group-append">
+                <button class="btn btn-navbar" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
         </div>
-      </div>
     </form>
 
-  <!-- SEARCH FORM -->
+    <!-- SEARCH FORM -->
     <form class="form-inline ml-3">
-      <div class="input-group input-group-sm">
-        <input class="form-control form-control-navbar" type="search" placeholder="Select presentation" aria-label="Search">
-        <div class="input-group-append">
-          <button class="btn btn-navbar" type="submit">
-            <i class="fas fa-search"></i>
-          </button>
+        <div class="input-group input-group-sm">
+            <input class="form-control form-control-navbar" type="search" placeholder="Select presentation" aria-label="Search">
+            <div class="input-group-append">
+                <button class="btn btn-navbar" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
         </div>
-      </div>
     </form>
-  </nav>
-  <!-- /.navbar -->
+</nav>
+<!-- /.navbar -->
 
 <!-- Main content -->
 <section class="content" style="margin-top: 10px">
@@ -116,15 +114,129 @@
                 </div>
             </div>
             <!-- ./col -->
+
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header border-0">
+                        <div class="d-flex justify-content-between">
+                            <h3 class="card-title">Quiz</h3>
+                            <!-- SEARCH FORM -->
+                            <form class="form-inline ml-3">
+                                <div class="input-group input-group-sm">
+                                    <input class="form-control form-control-navbar" type="search" placeholder="Select quiz" aria-label="Search">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-navbar" type="submit">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <p class="d-flex flex-column">
+                                {% set participants = data['quizData'][0][0][9] %}     
+                                <span class="text-bold text-lg">{{participants}}</span>
+                                <span class="text-muted">Quiz participants</span>
+                            </p>
+                            <p class="ml-auto d-flex flex-column text-right">
+                                {% set completed = data['quizData'][0][0][10] %}     
+                                <span class="text-bold text-lg">{{completed}} 
+                                {% set percentage = data['quizData'][0][0][11] %}     
+                                <i class="fas fa-arrow-up" style="font-size: 15px;">{{percentage}}</i> </span>
+                                <span class="text-muted">Quiz completed</span>
+                            </p>
+                        </div>
+
+                        <div class="position-relative mb-4">
+                            <canvas id="quizChart" height="150"></canvas>
+                        </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <!-- /.row -->
     </div>
     <!-- /.container-fluid -->
 </section>
-<!-- Bootstrap 4 -->
-<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- ChartJS -->
-<script src="/plugins/chart.js/Chart.min.js"></script>
-</body>
 
+<!-- REQUIRED SCRIPTS -->
+
+{% block javascript %}
+<!-- jQuery -->
+<script src="/static/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- ChartJS -->
+<script src="/static/plugins/chart.js/Chart.min.js"></script>
+<script>
+
+
+    var jsonData = {{ data|tojson|safe }};
+    //create labels object for x axis description
+    //labelsMax = number of questions within quiz
+    var labelsMax = jsonData['quizData'][0][0][5];
+    const labels = [];
+    for (i=labelsMax; i>=0; i--) {
+        labels.push(i);
+    }
+    oldValueLabels = labels[0];
+    newValueLabels = oldValueLabels + " (max)";
+    labels[0] = newValueLabels
+
+    oldValueLabels = labels[labelsMax];
+    newValueLabels = oldValueLabels + " (min)";
+    labels[labelsMax] = newValueLabels
+
+
+    //create data object for absolute number of correct quiz replies
+    const data = new Array(labelsMax+1)
+
+    //initialize with 0
+    for (m=0; m<=labelsMax; m++) {
+        data[m] = 0
+    }
+
+    for (j=0; j<jsonData['quizData'][0].length; j++) {
+        var currentScore = jsonData['quizData'][0][j][0][1]
+        //-1 for quiz not completed
+        if (currentScore > -1) {
+            for (k=0; k<data.length; k++) {
+                if (k==currentScore) {
+                    oldValue = data[k]
+                    newValue = oldValue + 1
+                    data[k] = newValue
+                }
+            }
+        }
+    }
+
+    //reverse list for correct visualization
+    data.reverse()
+
+    new Chart(document.getElementById("quizChart"), {
+    type: 'bar',
+    data   : {
+      labels  : labels,
+      datasets: [
+        {
+          backgroundColor: '#00cc66',
+          borderColor    : '#00cc66',
+          data           : data,
+          label          : "Students"
+        }
+      ]
+    },
+    options: {
+    }
+});
+</script>
+
+{% endblock %}
+
+</body>
 </html>
