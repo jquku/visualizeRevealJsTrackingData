@@ -122,7 +122,7 @@ def main():
                     if indexForQuiz == None:
                         quizSessionList.append(sessionQuizObject)
                     else:
-                        quizSessionList[u].append(sessionQuizObject)    
+                        quizSessionList[u].append(sessionQuizObject)
                 audioSessionList.append(sessionAudioObject)
                 #videoSessionList.append(sessionVideoObject)
 
@@ -138,7 +138,6 @@ def main():
 
         #progress is between 0 and 1 (collected when the user closed the presentation)
         finalProgress = response[i].get('tracking_json').get('finalProgress')
-        print("finalProgress: " + str(finalProgress))
         #LOGGING
         #print("number of slides: " + str(numberOfSlides))
         #print("URL: " + str(presentationUrl))
@@ -168,7 +167,6 @@ def main():
     averageDwellTime = time.strftime("%M:%S", time.gmtime(averageDwellTime))
     averageProgress = sumProgress/numberOfTrackedSessions
     averageSlidesPerSession = sumSlidesLookedAt/numberOfTrackedSessions
-    averageSlidesPerStudent = sumSlidesLookedAt/numberOfStudents
 
     quizSessionList = getNumberOfStudentsWhoCompletedQuiz(quizSessionList)
 
@@ -179,8 +177,8 @@ def main():
     data['averageDwellTime'] = averageDwellTime
     data['averageProgress'] = round(averageProgress * 100)
     data['averageSlidesPerSession'] = averageSlidesPerSession
-    data['averageSlidesPerStudent'] = averageSlidesPerStudent
     data['quizData'] = quizSessionList
+    data['dwellTimeData'] = dwellTimesAllSessionsList
     data['audioData'] = audioSessionList
 
 
@@ -203,7 +201,7 @@ def getNumberOfStudentsWhoCompletedQuiz(data):
     for i in range(0, len(data)):
         currentlyCompleted = 0
         numberOfElements = len(data[i])
-       
+
         for j in range(0, numberOfElements):
             if j==0:
                 currentScore = data[i][j][1]

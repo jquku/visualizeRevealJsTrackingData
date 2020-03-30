@@ -136,14 +136,14 @@
                     <div class="card-body">
                         <div class="d-flex">
                             <p class="d-flex flex-column">
-                                {% set participants = data['quizData'][0][0][9] %}     
+                                {% set participants = data['quizData'][0][0][9] %}
                                 <span class="text-bold text-lg">{{participants}}</span>
                                 <span class="text-muted">Quiz participants</span>
                             </p>
                             <p class="ml-auto d-flex flex-column text-right">
-                                {% set completed = data['quizData'][0][0][10] %}     
-                                <span class="text-bold text-lg">{{completed}} 
-                                {% set percentage = data['quizData'][0][0][11] %}     
+                                {% set completed = data['quizData'][0][0][10] %}
+                                <span class="text-bold text-lg">{{completed}}
+                                {% set percentage = data['quizData'][0][0][11] %}
                                 <i class="fas fa-arrow-up" style="font-size: 15px;">{{percentage}}</i> </span>
                                 <span class="text-muted">Quiz completed</span>
                             </p>
@@ -153,15 +153,66 @@
                             <canvas id="quizChart" height="150"></canvas>
                         </div>
 
-                        </div>
                     </div>
                 </div>
             </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header border-0">
+                        <h3 class="card-title">Dwell time details</h3>
 
+                        <div class="card-tools">
+                            <ul class="pagination pagination-sm">
+                                <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
+                                <li class="page-item"><a href="#" class="page-link">1</a></li>
+                                <li class="page-item"><a href="#" class="page-link">2</a></li>
+                                <li class="page-item"><a href="#" class="page-link">3</a></li>
+                                <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <ul class="todo-list" data-widget="todo-list">
+                            <li style="border-left: 0px solid;">
+                                <!-- drag handle -->
+
+                                <!-- todo text -->
+                                <span class="text">1</span>
+
+                            </li>
+                            <li style="border-left: 0px solid;">
+
+                                <span class="text">2</span>
+                            </li>
+                            <li style="border-left: 0px solid;">
+
+                                <span class="text">3</span>
+
+                            </li>
+                            <li style="border-left: 0px solid;">
+
+                                <span class="text">4</span>
+
+                            </li>
+                            <li style="border-left: 0px solid;">
+
+                                <span class="text">5</span>
+
+                            </li>
+                            <li style="border-left: 0px solid;">
+
+                                <span class="text">6</span>
+
+                            </li>
+
+                        </ul>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+            </div>
         </div>
-        <!-- /.row -->
     </div>
-    <!-- /.container-fluid -->
 </section>
 
 <!-- REQUIRED SCRIPTS -->
