@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template
 
 import requests
-import datetime
+import time
 
 mod_main = Blueprint('Main',__name__)
 
@@ -165,6 +165,7 @@ def main():
     #calculating kpis
     numberOfStudents = len(arrayWithStudentIDs)
     averageDwellTime = totalDwellTimeSeconds/numberOfTrackedSessions
+    averageDwellTime = time.strftime("%M:%S", time.gmtime(averageDwellTime))
     averageProgress = sumProgress/numberOfTrackedSessions
     averageSlidesPerSession = sumSlidesLookedAt/numberOfTrackedSessions
     averageSlidesPerStudent = sumSlidesLookedAt/numberOfStudents
