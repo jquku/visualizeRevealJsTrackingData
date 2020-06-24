@@ -1,4 +1,4 @@
-# AnonymizeEducationalData
+# Visualize reveal.js tracking data
 
 This python flask (web-)application is made to visualize anonymized reveal.js tracking data in a dashboard.
 The data is being tracked by the [reveal.js tracking plugin](https://github.com/pantajosef/reveal.js-tracking)
