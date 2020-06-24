@@ -2,7 +2,7 @@
 
 This python flask (web-)application is made to visualize anonymized reveal.js tracking data in a dashboard.
 The data is being tracked by the [reveal.js tracking plugin](https://github.com/pantajosef/reveal.js-tracking)
-and anonymized by another [application](https://github.com/jquku/anonymizeReveal.js) using the ARX data anonymization tool.
+and anonymized by the [anonymizeReveal.js application](https://github.com/jquku/anonymizeReveal.js) using the ARX data anonymization tool.
 
 #### Prerequisites (installation via pip is recommended)
 - python flask
