@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from datetime import datetime
 
 import requests
 import time
@@ -7,14 +8,11 @@ mod_main = Blueprint('Main',__name__)
 
 @mod_main.route('/dashboard', methods=['GET', 'POST'])
 
-#no data anonymization yet
-#VIDEO MISSING
-#for testing the reveal.js tracking container need to be running and you should
-#use the exemplary presentation for tracking data
-#currently quiz and dwellTimesObject get userToken and studentId appended
-
+#for testing purposes the reveal.js tracking container needs to be running and
+#you should use the exemplary demo presentation for tracking data
 
 def main():
+
     #send get request to get json object with tracking data
     response = requests.get("http://localhost:4567/all").json()
     numberOfTrackedSessions = len(response)
@@ -27,11 +25,11 @@ def main():
     dwellTimesAllSessionsList = []
     quizSessionList = []
     audioSessionList = []
-    #videoSessionList = []
     numberOfTimesFirstQuizPageWasReached = 0
 
     for i in range(0, numberOfTrackedSessions):
 
+        #get data from json
         currentStudentID = response[i].get('student_id')
         timestampSessionBegin = response[i].get('created_at')
         timestampUpdated = response[i].get('updated_at')
@@ -45,43 +43,40 @@ def main():
         #bool added to avoid wrong measures (multiple quiz entries in session object when quiz is completed)
         numberOfTimesFirstQuizPageWasReachedBool = False
 
-
         #iterate through timeline data to get quiz info for session
         for j in range(0, len(timelineData)):
 
-            #VORHER außerhalb der for schleife
             sessionQuizObject = []
             temporaryQuizObject = []
             sessionAudioObject = []
-            #sessionVideoObject = []
 
+            #handle audio data
             if timelineData[j].get('type') == "audio":
-                if timeline[j].get('mediaEvent') == "play":
-                    audioStart = timeline[j].get('timestamp')
-                    audioID = timeline[j].get('metadata').get('id')
-                    audioMediaSource = timeline[j].get('metadata').get('mediaSoure')
+                if timelineData[j].get('mediaEvent') == "play":
+                    audioStart = timelineData[j].get('timestamp')
+                    audioID = timelineData[j].get('metadata').get('id')
+                    audioMediaSource = timelineData[j].get('metadata').get('mediaSoure')
 
-                if timeline[j].get('mediaEvent') == "pause":
-                    audioPause = timeline[j].get('timestamp')
+                if timelineData[j].get('mediaEvent') == "pause":
+                    audioPause = timelineData[j].get('timestamp')
+                    audioPause = datetime.strptime(audioPause, "%H:%M:%S")
+                    audioStart = datetime.strptime(audioStart, "%H:%M:%S")
                     audioLasted = audioPause - audioStart
                     sessionAudioObject.append(audioID)
                     sessionAudioObject.append(audioMediaSource)
                     sessionAudioObject.append(audioLasted)
 
-
-
+            #handle quiz data
             if timelineData[j].get('type') == "quiz":
-                if timelineData[j].get('score') != None:
+                if timelineData[j].get('score') is not None:
                     quizScore = timelineData[j].get('score')
                     quizDwellTime = timelineData[j].get('dwellTime')
                 else:
                     #-1 for not completed
                     quizScore = -1
                     quizDwellTime = -1
-                #print("quizDwellTime: " + str(quizDwellTime))
-                #print("quizScore: " + str(quizScore))
 
-                if numberOfTimesFirstQuizPageWasReachedBool == False:
+                if numberOfTimesFirstQuizPageWasReachedBool is False:
                     numberOfTimesFirstQuizPageWasReached = numberOfTimesFirstQuizPageWasReached + 1
                     numberOfTimesFirstQuizPageWasReachedBool = True
                 quizId = timelineData[j].get('metadata').get('id')
@@ -92,9 +87,6 @@ def main():
                 quizNumberOfQuestions = timelineData[j].get('metadata').get('numberOfQuestions')
                 timestampOfQuizSession =  timelineData[j].get('timestamp')
 
-                #temporaryQuizObject = [quizDwellTime, quizScore, quizId,
-                #    quizName, quizTopic, quizNumberOfQuestions,
-                #    timestampOfQuizSession, currentStudentID, userToken]
                 temporaryQuizObject.append(quizDwellTime)
                 temporaryQuizObject.append(quizScore)
                 temporaryQuizObject.append(quizId)
@@ -106,12 +98,6 @@ def main():
                 temporaryQuizObject.append(currentStudentID)
                 temporaryQuizObject.append(userToken)
                 sessionQuizObject.append(temporaryQuizObject)
-                #QUIZ LOGGING
-                #print("quizId: " + str(quizId))
-                #print("quizName: " + str(quizName))
-                #print("quizTopic: " + str(quizTopic))
-                #print("quizNumberOfQuestions: " + str(quizNumberOfQuestions))
-                #print("timestampOfQuizSession: " + str(timestampOfQuizSession))
 
                 #building the final quiz list with all quiz session elements
                 indexForQuiz = None
@@ -119,14 +105,14 @@ def main():
                     if quizSessionList[u][0][2] == quizId:
                         indexForQuiz = u
                 if len(sessionQuizObject) > 0:
-                    if indexForQuiz == None:
+                    if indexForQuiz is None:
                         quizSessionList.append(sessionQuizObject)
                     else:
                         quizSessionList[u].append(sessionQuizObject)
                 audioSessionList.append(sessionAudioObject)
-                #videoSessionList.append(sessionVideoObject)
 
         sessionDwellTimeObject = []
+
         #iterate through object to get individual dwell time per slide (for every tracking sesion)
         for x in range(0, numberOfSlidesPerTrackingSession):
             dwellTimePerSlide = dwellTimesObject[x].get('dwellTime')
@@ -138,14 +124,6 @@ def main():
 
         #progress is between 0 and 1 (collected when the user closed the presentation)
         finalProgress = response[i].get('tracking_json').get('finalProgress')
-        #LOGGING
-        #print("number of slides: " + str(numberOfSlides))
-        #print("URL: " + str(presentationUrl))
-        #print("finalProgress: " + str(finalProgress))
-        #print("session began at: " + str(timestampSessionBegin))
-        #print("session updated at: " + str(timestampUpdated))
-        #print(str(userToken))
-        #print(str(sessionDwellTimeObject))
 
         #calculating the dwell time for each tracking session
         individualTotalDwellTime = response[i].get('tracking_json').get('totalDwellTime')
@@ -181,23 +159,10 @@ def main():
     data['dwellTimeData'] = dwellTimesAllSessionsList
     data['audioData'] = audioSessionList
 
-
-    #LOGGING
-    #print(str(dwellTimesAllSessionsList))
-    #print("average Progress: " + str(averageProgress))
-    #print("total dwell time in seconds: " + str(totalDwellTimeSeconds))
-    #print("average dwell time is " + str(averageDwellTime) + " seconds")
-    #print(type(response))
-    #response = requests.get("http://localhost:4567/last-tracked").text
-    #print("Das Quiz wurde " + str(len(quizSessionList)) + "-mal von " +
-    #    str(numberOfStudentsParticipatedInQuiz) + " Studenten ausgefüllt")
-    #print("QUIZ: " + str(quizSessionList))
-    #print("AUDIO: " + str(audioSessionList))
-
     return render_template("dashboard.html", data=data)
 
 def getNumberOfStudentsWhoCompletedQuiz(data):
-    #print(len(data))
+    #this method calculates how many users participated and completed a quiz
     for i in range(0, len(data)):
         currentlyCompleted = 0
         numberOfElements = len(data[i])
