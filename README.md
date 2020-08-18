@@ -12,8 +12,8 @@ and can be anonymized by the [anonymizeReveal.js application](https://github.com
 
 #### Changes in reveal.js tracking plugin
 
-The data for the dashboard is being stored in a postgreSQL database.
-An interface is being used to receive the data by a route. In order to make it
+The data for the dashboard is being stored in a PostgreSQL database.
+An interface is being used to receive the data by a route. In order to make the data exchange
 work the following route needs to be added in the app.rb file in the [reveal.js tracking plugin](https://github.com/pantajosef/reveal.js-tracking).
 
 ```
@@ -41,4 +41,4 @@ end
 - audio data
 - dwell time details (in template, but no functionality yet)
 
-Important: Since no strategy concerning the frequency of data anonymization has been chosen, this application still uses the datasets who are not k-anonymized yet. In order to only select the anonymized database table as a data basis, only the additional reveal.js tracking plugin route needs to be adjusted accordingly.
+Important: Since no strategy concerning the frequency of data anonymization has been chosen, this application still uses the datasets who are not k-anonymized yet. In order to only select the anonymized database table as a data basis, only the additional reveal.js tracking plugin route needs to be adjusted accordingly (replace tracked_sessions with tracked_sessions_anonymized).
